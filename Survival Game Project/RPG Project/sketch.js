@@ -1,46 +1,46 @@
-var player;
-var cell;
-var world;
-
 var renderWidth = 1024;
 var renderHeight = 768;
+
+var player;
+var world;
+
+var colCells = renderWidth / 32;
+var rowCells = renderHeight / 32;
+var possibleColours = [];
 
 function setup() {
   createCanvas(renderWidth, renderHeight);
 
   player = new Player();
-  cell = new Cell();
   world = new World();
+  world.asignTiles();
 }
 
 function draw() {
   background(51);
-  
+
+  world.generate();
   player.show();
   player.update();
-  world.show();
-}
-
-function Cell(){
-  this.cellWidth = 32;
-  this.cellHeight = 32;
 }
 
 function World(){
-  this.colCells = renderWidth / 32;
-  this.rowCells = renderHeight / 32;
-
   this.generate = function(){
-        
-  }
-  this.show = function(){
-    for(var x = 0; x < this.colCells; x++){
-      for(var y = 0; y < this.rowCells; y++){
-        var i = x*cell.cellWidth;
-        var j = y*cell.cellHeight;
+    for(var i = 0; i < colCells; i++){
+      for(var j = 0; j < rowCells; j++){
+        var x = i*32;
+        var y = j*32;
+        fill(possibleColours[i][j]);
         stroke(0);
-        fill(255);
-        rect(i, j, cell.cellWidth, cell.cellHeight);
+        rect(x, y, 32, 32);
+      }
+    }
+  }
+  this.asignTiles = function(){
+    for(var i = 0; i < colCells; i++){
+      possibleColours[i] = [];
+      for(var j = 0; j < rowCells; j++){
+        possibleColours[i][j] = random(255);
       }
     }
   }
@@ -49,15 +49,35 @@ function World(){
 function Player(){
   this.width = 32;
   this.height = 32;
-  this.x = width / 2 - (this.width / 2);
-  this.y = height / 2 - (this.height / 2);
+  this.x = 0;
+  this.y = 0;
   this.moveSpeed = 3;
   
   this.update = function(){
     //Player movement controls
+    if(keyIsDown(LEFT_ARROW)){
+      if(this.x > 0){
+        this.x -= this.moveSpeed;
+      }
+    }
+    if(keyIsDown(RIGHT_ARROW)){
+      if(this.x < (renderWidth - player.width)){
+        this.x += this.moveSpeed;
+      }
+    }
+    if(keyIsDown(UP_ARROW)){
+      if(this.y > 0){
+        this.y -= this.moveSpeed;
+      }
+    }
+    if(keyIsDown(DOWN_ARROW)){
+      if(this.y < (renderHeight - player.height)){
+        this.y += this.moveSpeed;
+      }
+    }
   }
   this.show = function(){
-    fill(255);
+    fill(0, 255, 0);
     rect(this.x, this.y, this.width, this.height);
   }
 }
